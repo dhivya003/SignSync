@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignSync - Sign Language Detection</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script>
+        let signInterval;
+
+        function startCamera() {
+            document.getElementById('loading-message').style.display = 'none';
+            document.getElementById('video-frame').style.display = 'block';
+            document.getElementById('video-frame').src = "/video_feed";
+            document.getElementById('video-placeholder').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('speech-btn').style.display = 'none';
+            document.getElementById('sign-container').style.display = 'block';
+
+            signInterval = setInterval(fetchDetectedSign, 100);
+        }
+
+        function stopCamera() {
+            document.getElementById('video-frame').src = "";
+            document.getElementById('video-frame').style.display = 'none';
+            document.getElementById('video-placeholder').style.display = 'block';
+            document.getElementById('start-btn').style.display = 'block';
+            document.getElementById('speech-btn').style.display = 'block';
+            document.getElementById('sign-container').style.display = 'none';
+
+            clearInterval(signInterval);
+        }
+
+        function fetchDetectedSign() {
+            fetch('/sign_output')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('sign-label').innerText = 'Detected Sign: ' + (data.sign || 'No sign detected');
+                })
+                .catch(err => console.log('Error fetching detected sign: ', err));
+        }
+
+        function uploadImage(event) {
+            let formData = new FormData();
+            formData.append("image", event.target.files[0]);
+
+            fetch('/predict_image', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('predicted-sign').innerText = 'Predicted Sign: ' + (data.sign || 'No sign detected');
+            })
+            .catch(err => console.log('Error uploading image:', err));
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 1200px;
+            gap: 50px;
+        }
+
+        .video-container, .sign-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .video-container {
+            width: 60%;
+        }
+
+        .sign-container {
+            width: 30%;
+            display: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 450px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        #video-placeholder img {
+            width: 60%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #start-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        #speech-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        #stop-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #loading-message {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .video-container, .sign-container {
+                width: 90%;
+            }
+
+            iframe {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to SignSync</h1>
+        
+        <div class="content">
+            <div class="video-container">
+                <div id="video-placeholder">
+                    <img src="static/hello_animated.gif" alt="Hello Animation">
+                    <div class="btn-container">
+                        <button id="start-btn" onclick="startCamera()">Sign-to-Text</button>
+                        <button id="speech-btn">Speech-to-Sign Video</button>
+                    </div>
+                </div>
+                <iframe id="video-frame" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+                <div id="loading-message">
+                    <p>Loading video feed...</p>
+                </div>
+            </div>
+            <div id="sign-container" class="sign-container">
+                <h3 id="sign-label">Detected Sign: </h3>
+                <h3>Or upload an image:</h3>
+                <input type="file" accept="image/*" onchange="uploadImage(event)">
+                <h3 id="predicted-sign"></h3>
+                <button id="stop-btn" onclick="stopCamera()">Stop Camera</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
