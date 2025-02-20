@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignSync - Sign Language Detection</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SignSync - Live Sign Language Detection</h1>
+        <div class="video-container">
+            <img src="/video_feed" alt="Live Video Stream">
+        </div>
+        <p>Show your signs in front of the camera, and the system will detect them in real-time.</p>
+    </div>
+</body>
+</html>
