@@ -1,0 +1,8 @@
+flask
+opencv-python
+tensorflow
+keras
+mediapipe
+pyttsx3
+numpy
+pickle5
