@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignSync - Sign Language Detection</title>
+    <link rel="stylesheet" href="static/styles.css">
+    <script>
+        function goToUploadPage() {
+            window.location.href = "./templates/upload.html";
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 1200px;
+            gap: 50px;
+        }
+
+        .video-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            width: 60%;
+        }
+
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #start-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        #speech-btn {
+            background: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 900px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .video-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to SignSync</h1>
+        
+        <div class="content">
+            <div class="video-container">
+                <div id="video-placeholder">
+                    <img src="static/hello_animated.gif" alt="Hello Animation">
+                    <div class="btn-container">
+                        <button id="start-btn" onclick="window.location.href='/upload'">Sign-to-Text</button>
+                        <button id="speech-btn" onclick="window.location.href='/speech-to-sign'">Speech-to-Sign Video</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
