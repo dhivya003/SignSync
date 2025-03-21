@@ -29,9 +29,22 @@ An AI-powered system that translates **sign language to text & speech** and **sp
      cd sign-language-interpreter
 
 2. **Install Python 3.10.10**
- ```bash
+    ```bash
           Install and verify:
-           python --version
+          python --version
+
+ 3. **Install Dependencies**
+    ```bash
+          pip install -r requirements.txt
+    
+ 4. **Navigate to the Delta Folder**
+    ```bash
+          cd Delta
+    
+ 5. **Run the application**
+    ```bash
+           python app.py
+    
 
 
 
