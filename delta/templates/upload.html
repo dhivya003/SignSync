@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Sign Image - SignSync</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Dark, professional gradient */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            font-family: 'Montserrat', sans-serif;
+            color: #f5f5f5;
+        }
+        .header {
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+        .container-custom {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .form-control {
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            padding: 12px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
+        }
+        .btn-custom {
+            padding: 12px 40px;
+            font-size: 1.15rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-predict {
+            background-color: #6c5ce7; /* Vibrant purple for energy */
+            border-color: #6c5ce7;
+        }
+        .btn-predict:hover {
+            background-color: #5a4bcf; /* Darker purple */
+            border-color: #5a4bcf;
+        }
+        .btn-back {
+            background-color: #e17055;
+            border-color: #e17055;
+        }
+        .btn-back:hover {
+            background-color: #ffb142; /* Darker yellow */
+            border-color: #ffb142;
+        }
+        .prediction-img {
+            max-width: 320px;
+            height: auto;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 3px solid #ffffff;
+            transition: transform 0.3s ease;
+        }
+        .prediction-img:hover {
+            transform: scale(1.03);
+        }
+        .prediction-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #00e676; /* Bright green, kept for visibility */
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="header display-4 fw-bold">Upload Your Sign Image</h1>
+    <div class="container-custom text-center">
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('predict_number') }}" class="mb-4">
+            <div class="mb-4">
+                <input type="file" name="image" accept="image/*" class="form-control" required>
+            </div>
+        </form>
+
+        {% if error %}
+            <p class="text-danger mt-3">{{ error }}</p>
+        {% endif %}
+
+        {% if prediction %}
+            <div class="mt-3">
+                {% if image_url %}
+                    <img src="{{ image_url }}" alt="Uploaded Image" class="prediction-img">
+                {% endif %}
+                <p class="prediction-text">Predicted Sign: {{ prediction }} (Confidence: {{ confidence|round(2) }}%)</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Buttons outside the container -->
+    <div class="mt-5">
+        <button type="submit" form="predict-form" class="btn btn-custom btn-predict text-white mx-2">Predict Sign</button>
+        <a href="{{ url_for('home') }}" class="btn btn-custom btn-back text-white mx-2">Back to Home</a>
+    </div>
+
+    <!-- Bootstrap 5 JS and Popper.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <!-- Script to associate button with form -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.id = 'predict-form';
+        });
+    </script>
+</body>
+</html>
