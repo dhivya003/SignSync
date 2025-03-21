@@ -15,3 +15,23 @@ An AI-powered system that translates **sign language to text & speech** and **sp
 🔹 **Speech Processing**: Speech-to-Text (STT), Text-to-Speech (TTS)  
 🔹 **Programming**: Python  
 
+## 🚀 Getting Started  
+
+### Prerequisites  
+- **Python**: Version 3.10.10  
+- **Git**: Installed on your system  
+- A compatible webcam (for real-time sign language detection)  
+
+### Installation Steps  
+1. **Clone the Repository**
+2. ```bash
+git clone https://github.com/dhivya003/sign-language-interpreter.git
+cd sign-language-interpreter
+
+2. **Install Python 3.10.10**
+ ```bash
+   Install and verify:
+      python --version
+
+
+
