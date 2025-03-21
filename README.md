@@ -13,5 +13,5 @@ An AI-powered system that translates **sign language to text & speech** and **sp
 🔹 **Computer Vision**: OpenCV, Mediapipe  
 🔹 **Deep Learning**: TensorFlow, Keras (CNN)  
 🔹 **Speech Processing**: Speech-to-Text (STT), Text-to-Speech (TTS)  
-🔹 **Programming**: Python  
+🔹 **Programming**: Python 3.10.10
 
