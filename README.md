@@ -39,7 +39,7 @@ An AI-powered system that translates **sign language to text & speech** and **sp
     
  4. **Navigate to the Delta Folder**
     ```bash
-          cd Delta
+          cd delta
     
  5. **Run the application**
     ```bash
