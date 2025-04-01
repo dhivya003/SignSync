@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Sign Prediction - SignSync</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Google Fonts: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            font-family: 'Montserrat', sans-serif;
+            color: #f5f5f5;
+        }
+        .header {
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        .content-wrapper {
+            display: flex;
+            align-items: flex-start;
+            max-width: 1200px;
+            gap: 20px;
+        }
+        .video-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            max-width: 700px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        .video-feed {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border: 3px solid #ffffff;
+        }
+        .prediction-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            width: 300px;
+            min-height: 200px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .prediction-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00e676;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .prediction-text {
+            flex-grow: 1;
+            font-size: 1.1rem;
+            color: #00e676;
+            padding: 10px;
+            overflow-y: auto;
+            line-height: 1.5;
+            white-space: pre-wrap; /* Allows wrapping while preserving spaces */
+        }
+        .btn-custom {
+            padding: 10px 20px;
+            font-size: 1.15rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-back {
+            background-color: #ff7675;
+            border-color: #ff7675;
+        }
+        .btn-back:hover {
+            background-color: #ff5252;
+            border-color: #ff5252;
+        }
+        .btn-clear {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-size: 1rem;
+            padding: 8px 16px;
+        }
+        .btn-clear:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            z-index: 10;
+        }
+        .loading-text {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .prediction-text::-webkit-scrollbar {
+            width: 8px;
+        }
+        .prediction-text::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .prediction-text::-webkit-scrollbar-thumb {
+            background: #00e676;
+            border-radius: 10px;
+        }
+        .prediction-text::-webkit-scrollbar-thumb:hover {
+            background: #00c853;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="header display-6 fw-bold">Real-Time Sign Prediction</h1>
+    <div class="content-wrapper">
+        <div class="video-container text-center">
+            <div class="loading-overlay" id="loading">
+                <div class="loading-text">Camera Loading... <div class="spinner-border ms-2" role="status"></div></div>
+            </div>
+            <img src="{{ url_for('video_feed') }}" alt="Video Feed" class="video-feed" id="video-feed">
+        </div>
+        <div class="prediction-container">
+            <div class="prediction-header">Predicted Sentence</div>
+            <div class="prediction-text" id="prediction-text"></div>
+            <button class="btn btn-custom btn-clear text-white mt-3" onclick="clearPredictions()">Clear</button>
+        </div>
+    </div>
+    <div class="button-container">
+        <a href="{{ url_for('home') }}" class="btn btn-custom btn-back text-white">Go Back</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoFeed = document.getElementById('video-feed');
+            const predictionText = document.getElementById('prediction-text');
+            const loadingOverlay = document.getElementById('loading');
+            let lastPrediction = ''; // Track last prediction to avoid duplicates
+
+            videoFeed.onload = function() {
+                loadingOverlay.style.display = 'none';
+                updatePrediction();
+            };
+
+            videoFeed.onerror = function() {
+                loadingOverlay.innerHTML = '<div class="loading-text">Camera Failed to Load</div>';
+            };
+
+            function updatePrediction() {
+                setInterval(() => {
+                    fetch('/prediction')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! Status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Prediction data:', data); // Debug
+                            if (data.class && data.class !== lastPrediction) {
+                                // Append new prediction to the right with a space before it
+                                const currentText = predictionText.textContent.trim();
+                                const newPrediction = `${currentText ? currentText + ' ' : ''}${data.class}`;
+                                predictionText.textContent = newPrediction;
+                                lastPrediction = data.class;
+
+                                // Scroll to the end to show the latest prediction
+                                predictionText.scrollTop = predictionText.scrollHeight;
+
+                                // Optional: Limit to 200 characters
+                                if (predictionText.textContent.length > 200) {
+                                    predictionText.textContent = predictionText.textContent.slice(-200);
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching prediction:', error);
+                            predictionText.textContent += ' Error';
+                        });
+                }, 2000); // Match CAPTURE_INTERVAL in app.py
+            }
+
+            window.clearPredictions = function() {
+                predictionText.textContent = '';
+                lastPrediction = '';
+            };
+        });
+    </script>
+</body>
+</html>
