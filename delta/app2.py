@@ -22,7 +22,7 @@ latest_prediction = {"class": "", "confidence": 0.0}
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.3)
 
-# Labels dictionary from the second code
+# Labels dictionary
 labels_dict = {
     0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J',
     10: 'K', 11: 'L', 12: 'M', 13: 'N', 14: 'O', 15: 'P', 16: 'Q', 17: 'R', 18: 'S',
@@ -80,11 +80,11 @@ def predict_frame(frame, model):
         prediction = model.predict(landmarks)
         prediction_proba = model.predict_proba(landmarks)
         predicted_class_idx = int(prediction[0])
-        confidence = max(prediction_proba[0]) * 100  # Convert to percentage
+        confidence = max(prediction_proba[0]) * 100  # Still calculated but not displayed
         if predicted_class_idx not in labels_dict:
             raise ValueError(f"Predicted class index {predicted_class_idx} not found in labels_dict.")
         predicted_class = labels_dict[predicted_class_idx]
-        print(f"Predicted class: {predicted_class}, Confidence: {confidence:.2f}%")
+        print(f"Predicted class: {predicted_class}")  # Confidence removed from print
         return predicted_class, confidence
     except Exception as e:
         raise Exception(f"Prediction failed: {str(e)}") from e
@@ -117,7 +117,7 @@ def generate_frames(model):
                 print(f"Prediction error: {str(e)}")
                 latest_prediction = {"class": "Error", "confidence": 0.0}
         if latest_prediction["class"]:
-            label = f"Class: {latest_prediction['class']}, Confidence: {latest_prediction['confidence']:.2f}%"
+            label = f"Class: {latest_prediction['class']}"  # Confidence removed from label
             cv2.putText(frame, label, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2, cv2.LINE_AA)
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
@@ -159,7 +159,7 @@ def predict_number():
         predicted_class, confidence = predict_frame(img, model)
         return render_template('upload.html',
                                prediction=predicted_class if predicted_class else "No hand detected",
-                               confidence=confidence,
+                               confidence=confidence,  # Still passed but not displayed in template
                                image_url=url_for('static', filename=f'uploads/{filename}'))
     except Exception as e:
         return render_template('upload.html', error=str(e)), 500
@@ -194,6 +194,10 @@ def speech_to_sign_page():
 def get_prediction():
     global latest_prediction
     return jsonify(latest_prediction)
+
+@app.route('/learn_signs')
+def learn_signs():
+    return render_template('learn_signs.html')
 
 # Load model
 model = load_model()

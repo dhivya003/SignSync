@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-Time Sign Prediction - SignSync</title>
-    <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Google Fonts: Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -18,47 +18,60 @@
             padding: 40px 20px;
             font-family: 'Montserrat', sans-serif;
             color: #f5f5f5;
+            position: relative;
+            overflow-x: hidden;
         }
         .header {
             color: #ffffff;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
             margin-bottom: 30px;
             font-weight: 700;
+            letter-spacing: 1px;
         }
         .content-wrapper {
             display: flex;
             align-items: flex-start;
             max-width: 1200px;
-            gap: 20px;
+            gap: 25px;
+            width: 100%;
         }
         .video-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 30px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             max-width: 700px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             position: relative;
+            transition: transform 0.3s ease;
+        }
+        .video-container:hover {
+            transform: translateY(-5px);
         }
         .video-feed {
             max-width: 100%;
             height: auto;
             border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
             border: 3px solid #ffffff;
         }
         .prediction-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 20px;
             padding: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             width: 300px;
             min-height: 200px;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: none;
             flex-direction: column;
+            transition: opacity 0.3s ease;
+        }
+        .prediction-container.visible {
+            display: flex;
+            opacity: 1;
         }
         .prediction-header {
             font-size: 1.2rem;
@@ -66,6 +79,7 @@
             color: #00e676;
             margin-bottom: 15px;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+            text-align: center;
         }
         .prediction-text {
             flex-grow: 1;
@@ -74,7 +88,9 @@
             padding: 10px;
             overflow-y: auto;
             line-height: 1.5;
-            white-space: pre-wrap; /* Allows wrapping while preserving spaces */
+            white-space: pre-wrap;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
         }
         .btn-custom {
             padding: 10px 20px;
@@ -85,23 +101,28 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .btn-back {
-            background-color: #ff7675;
-            border-color: #ff7675;
-        }
-        .btn-back:hover {
-            background-color: #ff5252;
-            border-color: #ff5252;
-        }
         .btn-clear {
             background-color: #6c757d;
             border-color: #6c757d;
             font-size: 1rem;
             padding: 8px 16px;
+            transition: background-color 0.3s ease;
         }
         .btn-clear:hover {
             background-color: #5a6268;
             border-color: #5a6268;
+        }
+        .btn-download {
+            background-color: #00e676;
+            border-color: #00e676;
+            font-size: 1rem;
+            padding: 8px 16px;
+            margin-left: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn-download:hover {
+            background-color: #00c853;
+            border-color: #00c853;
         }
         .loading-overlay {
             position: absolute;
@@ -109,7 +130,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -120,24 +141,121 @@
             color: #ffffff;
             font-size: 1.5rem;
             font-weight: 600;
-        }
-        .button-container {
-            margin-top: 20px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .prediction-text::-webkit-scrollbar {
             width: 8px;
         }
         .prediction-text::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
         }
         .prediction-text::-webkit-scrollbar-thumb {
             background: #00e676;
             border-radius: 10px;
+            transition: background 0.3s ease;
         }
         .prediction-text::-webkit-scrollbar-thumb:hover {
             background: #00c853;
+        }
+        /* Floating Speech Settings Styles */
+        .floating-settings {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .settings-icon {
+            cursor: pointer;
+            color: #00e676;
+            font-size: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .settings-icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .speech-settings-modal {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 250px;
+            transition: opacity 0.3s ease;
+        }
+        .speech-settings-modal.show {
+            display: block;
+            opacity: 1;
+        }
+        .form-select, .form-range {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #e0f7fa;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-select option {
+            color: #e0f7fa;
+            background: rgba(15, 32, 39, 0.95);
+        }
+        .form-label {
+            color: #00e676;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .form-select:focus, .form-range:focus {
+            border-color: #00e676;
+            box-shadow: 0 0 5px rgba(0, 230, 118, 0.5);
+            outline: none;
+        }
+        /* Floating Back Button Styles */
+        .floating-back {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        .btn-back {
+            background: linear-gradient(45deg, #ff6b6b, #ff8787);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            background: linear-gradient(45deg, #e65c5c, #ff7373);
+            transform: scale(1.1);
+        }
+        .btn-back i {
+            font-size: 24px;
+            color: #ffffff;
+        }
+        @media (max-width: 900px) {
+            .btn-back {
+                width: 40px;
+                height: 40px;
+            }
+            .btn-back i {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -150,14 +268,40 @@
             </div>
             <img src="{{ url_for('video_feed') }}" alt="Video Feed" class="video-feed" id="video-feed">
         </div>
-        <div class="prediction-container">
-            <div class="prediction-header">Predicted Sentence</div>
+        <div class="prediction-container" id="predictionContainer">
+            <div class="prediction-header">Sign-To-Text</div>
             <div class="prediction-text" id="prediction-text"></div>
-            <button class="btn btn-custom btn-clear text-white mt-3" onclick="clearPredictions()">Clear</button>
+            <div>
+                <button class="btn btn-custom btn-clear text-white mt-3" onclick="clearPredictions()">Clear</button>
+                <button class="btn btn-custom btn-download text-white mt-3" onclick="downloadPredictions()">Download</button>
+            </div>
         </div>
     </div>
-    <div class="button-container">
-        <a href="{{ url_for('home') }}" class="btn btn-custom btn-back text-white">Go Back</a>
+    
+    <!-- Floating Speech Settings -->
+    <div class="floating-settings">
+        <span class="settings-icon" onclick="toggleSpeechSettings()">⚙️</span>
+        <div class="speech-settings-modal" id="speechSettingsModal">
+            <div class="mb-3">
+                <label for="voiceSelect" class="form-label">Voice</label>
+                <select class="form-select" id="voiceSelect"></select>
+            </div>
+            <div class="mb-3">
+                <label for="speechRate" class="form-label">Speed (0.1-10)</label>
+                <input type="range" class="form-range" id="speechRate" min="0.1" max="10" step="0.1" value="1">
+            </div>
+            <div>
+                <label for="speechPitch" class="form-label">Pitch (0-2)</label>
+                <input type="range" class="form-range" id="speechPitch" min="0" max="2" step="0.1" value="1">
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Back Button -->
+    <div class="floating-back">
+        <a href="{{ url_for('home') }}" class="btn btn-back" title="Back to Home">
+            <i class="fas fa-arrow-left"></i>
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
@@ -166,11 +310,46 @@
         document.addEventListener('DOMContentLoaded', function() {
             const videoFeed = document.getElementById('video-feed');
             const predictionText = document.getElementById('prediction-text');
+            const predictionContainer = document.getElementById('predictionContainer');
             const loadingOverlay = document.getElementById('loading');
-            let lastPrediction = ''; // Track last prediction to avoid duplicates
+            const voiceSelect = document.getElementById('voiceSelect');
+            const speechRate = document.getElementById('speechRate');
+            const speechPitch = document.getElementById('speechPitch');
+            const speechSettingsModal = document.getElementById('speechSettingsModal');
+            let lastPrediction = '';
+            let fullPredictionText = '';
+            const synth = window.speechSynthesis;
+            let utterance = null;
+
+            // Load saved preferences
+            const savedVoice = localStorage.getItem('voiceName') || '';
+            const savedRate = localStorage.getItem('speechRate') || '1';
+            const savedPitch = localStorage.getItem('speechPitch') || '1';
+            speechRate.value = savedRate;
+            speechPitch.value = savedPitch;
+
+            // Populate voice options
+            function populateVoices() {
+                const voices = synth.getVoices();
+                voiceSelect.innerHTML = voices
+                    .filter(voice => voice.lang.includes('en'))
+                    .map(voice => 
+                        `<option value="${voice.name}" ${voice.name === savedVoice ? 'selected' : ''}>
+                            ${voice.name} (${voice.lang})
+                        </option>`
+                    ).join('');
+            }
+            synth.onvoiceschanged = populateVoices;
+            populateVoices();
+
+            // Save preferences on change
+            voiceSelect.addEventListener('change', () => localStorage.setItem('voiceName', voiceSelect.value));
+            speechRate.addEventListener('change', () => localStorage.setItem('speechRate', speechRate.value));
+            speechPitch.addEventListener('change', () => localStorage.setItem('speechPitch', speechPitch.value));
 
             videoFeed.onload = function() {
                 loadingOverlay.style.display = 'none';
+                predictionContainer.classList.add('visible');
                 updatePrediction();
             };
 
@@ -178,28 +357,38 @@
                 loadingOverlay.innerHTML = '<div class="loading-text">Camera Failed to Load</div>';
             };
 
+            function speakText(text) {
+                if (synth.speaking) {
+                    synth.cancel();
+                }
+                utterance = new SpeechSynthesisUtterance(text);
+                const voices = synth.getVoices();
+                const selectedVoice = voices.find(voice => voice.name === voiceSelect.value);
+                if (selectedVoice) utterance.voice = selectedVoice;
+                utterance.lang = 'en-US';
+                utterance.volume = 1.0;
+                utterance.rate = parseFloat(speechRate.value);
+                utterance.pitch = parseFloat(speechPitch.value);
+                synth.speak(utterance);
+            }
+
             function updatePrediction() {
                 setInterval(() => {
                     fetch('/prediction')
                         .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! Status: ${response.status}`);
-                            }
+                            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                             return response.json();
                         })
                         .then(data => {
-                            console.log('Prediction data:', data); // Debug
+                            console.log('Prediction data:', data);
                             if (data.class && data.class !== lastPrediction) {
-                                // Append new prediction to the right with a space before it
                                 const currentText = predictionText.textContent.trim();
                                 const newPrediction = `${currentText ? currentText + ' ' : ''}${data.class}`;
                                 predictionText.textContent = newPrediction;
                                 lastPrediction = data.class;
-
-                                // Scroll to the end to show the latest prediction
+                                fullPredictionText = `${fullPredictionText ? fullPredictionText + ' ' : ''}${data.class}`;
+                                speakText(data.class);
                                 predictionText.scrollTop = predictionText.scrollHeight;
-
-                                // Optional: Limit to 200 characters
                                 if (predictionText.textContent.length > 200) {
                                     predictionText.textContent = predictionText.textContent.slice(-200);
                                 }
@@ -209,13 +398,41 @@
                             console.error('Error fetching prediction:', error);
                             predictionText.textContent += ' Error';
                         });
-                }, 2000); // Match CAPTURE_INTERVAL in app.py
+                }, 2000);
             }
 
             window.clearPredictions = function() {
                 predictionText.textContent = '';
+                fullPredictionText = '';
                 lastPrediction = '';
+                if (synth.speaking) synth.cancel();
             };
+
+            window.downloadPredictions = function() {
+                if (!fullPredictionText) {
+                    alert('No predictions to download yet!');
+                    return;
+                }
+                const blob = new Blob([fullPredictionText], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `predictions_${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            };
+
+            window.toggleSpeechSettings = function() {
+                speechSettingsModal.classList.toggle('show');
+            };
+
+            document.addEventListener('click', function(event) {
+                if (!speechSettingsModal.contains(event.target) && !event.target.classList.contains('settings-icon')) {
+                    speechSettingsModal.classList.remove('show');
+                }
+            });
         });
     </script>
 </body>
