@@ -224,15 +224,15 @@
                             const letters = sign.split('');
                             const letterContainer = document.createElement('div');
                             letterContainer.style.display = 'flex';
-                            letterContainer.style.flexWrap = 'wrap'; // Added to wrap letters
+                            letterContainer.style.flexWrap = 'wrap'; 
                             letterContainer.style.justifyContent = 'center';
-                            letterContainer.style.gap = '20px'; // Increased from 15px
-                            letterContainer.style.padding = '20px'; // Added padding
+                            letterContainer.style.gap = '20px'; 
+                            letterContainer.style.padding = '20px'; 
                             letters.forEach(letter => {
                                 const letterImg = document.createElement('img');
                                 letterImg.src = `/static/letters/${letter.toLowerCase()}.jpg`;
-                                letterImg.style.maxWidth = '250px'; // Increased from 200px
-                                letterImg.style.maxHeight = '250px'; // Added max-height
+                                letterImg.style.maxWidth = '250px'; 
+                                letterImg.style.maxHeight = '250px'; 
                                 letterImg.onerror = () => letterImg.style.display = 'none';
                                 letterContainer.appendChild(letterImg);
                             });
@@ -244,15 +244,15 @@
                         const letters = sign.split('');
                         const letterContainer = document.createElement('div');
                         letterContainer.style.display = 'flex';
-                        letterContainer.style.flexWrap = 'wrap'; // Added to wrap letters
+                        letterContainer.style.flexWrap = 'wrap'; 
                         letterContainer.style.justifyContent = 'center';
-                        letterContainer.style.gap = '20px'; // Increased from 15px
-                        letterContainer.style.padding = '20px'; // Added padding
+                        letterContainer.style.gap = '20px'; 
+                        letterContainer.style.padding = '20px'; 
                         letters.forEach(letter => {
                             const letterImg = document.createElement('img');
                             letterImg.src = `/static/letters/${letter.toLowerCase()}.jpg`;
-                            letterImg.style.maxWidth = '250px'; // Increased from 200px
-                            letterImg.style.maxHeight = '250px'; // Added max-height
+                            letterImg.style.maxWidth = '250px'; 
+                            letterImg.style.maxHeight = '250px'; 
                             letterImg.onerror = () => letterImg.style.display = 'none';
                             letterContainer.appendChild(letterImg);
                         });
