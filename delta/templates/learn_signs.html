@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn Indian Sign Language (ISL) with interactive demonstrations of letters and phrases.">
+    <meta name="keywords" content="Sign Language, Indian Sign Language, ISL, Learn Signs, SignSync">
     <title>Learn Signs - SignSync</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Add Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preload" href="/static/ISL_Gifs/hello.gif" as="image">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -36,24 +38,100 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-bar input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+        .search-bar input::placeholder {
+            color: #d0d0ff;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #B39DDB;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        .tab:hover {
+            background: #9575CD;
+        }
+        .tab.active {
+            background: #D81B60;
+            color: #ffffff;
+        }
+        .section-header {
+            font-size: 1.5rem;
+            margin: 20px 0 10px;
+            text-align: center;
+            color: #E1BEE7;
+            border-bottom: 2px solid #F50057;
+            padding-bottom: 5px;
+        }
         .sign-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
             margin-bottom: 40px;
         }
         .sign-item {
-            background: rgba(255, 255, 255, 0.18);
+            position: relative;
             border-radius: 10px;
             padding: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
             font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #263238;
         }
-        .sign-item:hover {
-            background: rgba(255, 255, 255, 0.28);
-            transform: translateY(-5px);
+        .sign-item.letter {
+            background: #D1C4E9;
+        }
+        .sign-item.phrase {
+            background: #F8BBD0;
+        }
+        .sign-item.letter:hover {
+            background: #B39DDB;
+        }
+        .sign-item.phrase:hover {
+            background: #F06292;
+        }
+        .sign-item:focus {
+            outline: 2px solid #F50057;
+            outline-offset: 2px;
+        }
+        .favorite-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1.2rem;
+            color: #B0BEC5;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .favorite-icon.favorited {
+            color: #FFB300;
         }
         .popup {
             display: none;
@@ -61,29 +139,38 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 15px;
-            padding: 40px; /* Increased from 30px */
+            padding: 40px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid #80DEEA;
             z-index: 1000;
-            max-width: 1200px; /* Increased from 1000px */
-            width: 98%; /* Increased from 95% */
-            max-height: 95vh; /* Increased from 90vh */
-            overflow-y: auto; /* Vertical scrolling */
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            max-width: 1200px;
+            width: 98%;
+            max-height: 95vh;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         .popup img {
             max-width: 100%;
-            max-height: 800px; /* Increased from 700px */
+            max-height: 800px;
             width: auto;
             height: auto;
             border-radius: 10px;
-            display: block; /* Ensures proper rendering */
+            display: block;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+        #popupContent {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
         }
         .popup-close {
-            position: sticky; /* Changed to sticky for visibility while scrolling */
+            position: sticky;
             top: 10px;
             right: 10px;
             font-size: 24px;
@@ -91,7 +178,7 @@
             cursor: pointer;
             background: none;
             border: none;
-            z-index: 1001; /* Above popup content */
+            z-index: 1001;
         }
         .overlay {
             display: none;
@@ -124,34 +211,67 @@
         }
         .btn-back i {
             font-size: 24px;
+            color: #ffffff;
+        }
+        .spinner {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #FF5252;
+            padding: 20px;
+            animation: spin 1s linear infinite;
+        }
+        .error-message {
+            color: #FF5252;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
         }
         footer {
-            background: rgba(0, 0, 0, 0.9);
+            background: #263238;
             padding: 20px;
             text-align: center;
-            color: #d0d0ff;
+            color: #B0BEC5;
             font-size: 0.9rem;
             margin-top: auto;
         }
         footer a {
-            color: #ff6b6b;
+            color: #FF8A80;
             text-decoration: none;
             transition: color 0.3s ease;
         }
         footer a:hover {
-            color: #ff8787;
+            color: #FFCA28;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         @media (max-width: 900px) {
             .container { padding: 20px; }
             .header { font-size: 1.5rem; }
-            .sign-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+            .sign-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .sign-item { font-size: 0.8rem; }
             .popup { 
                 max-width: 98%;
-                max-height: 85vh; /* Increased from 80vh */
+                max-height: 85vh;
                 padding: 20px;
             }
             .popup img {
-                max-height: 600px; /* Increased from 500px */
+                max-height: 600px;
             }
             .btn-back {
                 width: 40px;
@@ -160,23 +280,54 @@
             .btn-back i {
                 font-size: 20px;
             }
+            .tabs {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .tab {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            .search-bar input {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+        @media (max-width: 600px) {
+            .sign-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+            .section-header { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="header">Learn Sign Language</h1>
-        <div class="sign-grid" id="signList"></div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search signs (e.g., Any Questions, A)">
+        </div>
+        
+        <!-- Category Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="letters">Letters</div>
+            <div class="tab" data-tab="phrases">Phrases</div>
+            <div class="tab" data-tab="favorites">Favorites</div>
+        </div>
+        
+        <!-- Sign Grid -->
+        <div id="signList"></div>
         
         <!-- Back Button -->
-        <a href="{{ url_for('home') }}" class="btn btn-back text-white" title="Back to Home">
+        <a href="/" class="btn btn-back" title="Back to Home">
             <i class="fas fa-arrow-left"></i>
         </a>
         
         <!-- Popup and Overlay -->
         <div class="overlay" id="overlay"></div>
-        <div class="popup" id="popup">
-            <button class="popup-close" id="popupClose">×</button>
+        <div class="popup" id="popup" role="dialog" aria-labelledby="popup-title">
+            <h2 id="popup-title" class="visually-hidden">Sign Demonstration</h2>
+            <button class="popup-close" id="popupClose" aria-label="Close popup">×</button>
             <div id="popupContent"></div>
         </div>
     </div>
@@ -194,76 +345,266 @@
             const popupContent = document.getElementById('popupContent');
             const popupClose = document.getElementById('popupClose');
             const overlay = document.getElementById('overlay');
+            const searchInput = document.getElementById('searchInput');
+            const tabs = document.querySelectorAll('.tab');
+            let phraseMap = new Map();
+            let lettersData = [];
+            let phrasesData = [];
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-            const signs = [
+            // Fallback signs
+            const fallbackSigns = [
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
-                'U', 'V', 'W', 'X', 'Y', 'Z', 'Hello', 'Done', 'Thank You', 'I Love You', 'Sorry', 'Please', 'You are Welcome'
+                'U', 'V', 'W', 'X', 'Y', 'Z', 'Hello', 'Done', 'Thank You', 'I Love You', 'Sorry', 'Please', 'You Are Welcome',
+                'My', 'You', 'He', 'She', 'It', 'Eat', 'Drink', 'Go', 'Come', 'Wait', 'Tea', 'Stop', 'Telephone', 'Name', 
+                'Money', 'Walk', 'Think'
             ];
 
-            signs.forEach(sign => {
+            // Normalize known typos
+            const filenameCorrections = {
+                'ahemdabad.gif': 'ahmedabad.gif'
+            };
+
+            function populateSigns(lettersArray, phrasesArray, filter = 'letters', search = '') {
+                signList.innerHTML = '';
+                const searchLower = search.toLowerCase();
+
+                if (filter === 'favorites') {
+                    const favoriteSigns = [...lettersArray, ...phrasesArray]
+                        .filter(sign => favorites.includes(sign.displayName.toLowerCase()));
+                    if (favoriteSigns.length === 0) {
+                        const noFavorites = document.createElement('p');
+                        noFavorites.className = 'error-message';
+                        noFavorites.textContent = 'No favorite signs added yet.';
+                        signList.appendChild(noFavorites);
+                        return;
+                    }
+                    const favoriteGrid = document.createElement('div');
+                    favoriteGrid.className = 'sign-grid';
+                    favoriteSigns.forEach(sign => renderSignItem(sign, favoriteGrid));
+                    signList.appendChild(favoriteGrid);
+                    return;
+                }
+
+                if (filter === 'letters') {
+                    if (lettersArray.length > 0) {
+                        const letterHeader = document.createElement('h2');
+                        letterHeader.className = 'section-header';
+                        letterHeader.textContent = 'Letters';
+                        signList.appendChild(letterHeader);
+                        const letterGrid = document.createElement('div');
+                        letterGrid.className = 'sign-grid';
+                        lettersArray
+                            .filter(sign => !searchLower || sign.displayName.toLowerCase().includes(searchLower))
+                            .forEach(sign => renderSignItem(sign, letterGrid, 'letter'));
+                        signList.appendChild(letterGrid);
+                    }
+                }
+
+                if (filter === 'phrases') {
+                    if (phrasesArray.length > 0) {
+                        const phraseHeader = document.createElement('h2');
+                        phraseHeader.className = 'section-header';
+                        phraseHeader.textContent = 'Phrases';
+                        signList.appendChild(phraseHeader);
+                        const phraseGrid = document.createElement('div');
+                        phraseGrid.className = 'sign-grid';
+                        phrasesArray
+                            .filter(sign => !searchLower || sign.displayName.toLowerCase().includes(searchLower))
+                            .forEach(sign => renderSignItem(sign, phraseGrid, 'phrase'));
+                        signList.appendChild(phraseGrid);
+                    }
+                }
+            }
+
+            function renderSignItem(sign, grid = signList, type = '') {
+                // Determine type if not provided (for Favorites)
+                const itemType = type || (sign.displayName.length === 1 ? 'letter' : 'phrase');
+                
                 const signItem = document.createElement('div');
-                signItem.className = 'sign-item';
-                signItem.textContent = sign;
-                signItem.addEventListener('click', () => displaySign(sign));
-                signList.appendChild(signItem);
-            });
+                signItem.className = `sign-item ${itemType}`;
+                signItem.textContent = sign.displayName;
+                signItem.setAttribute('role', 'button');
+                signItem.setAttribute('tabindex', '0');
+                signItem.setAttribute('aria-label', `View sign for ${sign.displayName}`);
+                
+                // Favorite Icon
+                const favoriteIcon = document.createElement('i');
+                favoriteIcon.className = `fas fa-star favorite-icon ${favorites.includes(sign.displayName.toLowerCase()) ? 'favorited' : ''}`;
+                favoriteIcon.setAttribute('aria-label', `Toggle favorite for ${sign.displayName}`);
+                favoriteIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const signLower = sign.displayName.toLowerCase();
+                    if (favorites.includes(signLower)) {
+                        favorites = favorites.filter(f => f !== signLower);
+                        favoriteIcon.classList.remove('favorited');
+                    } else {
+                        favorites.push(signLower);
+                        favoriteIcon.classList.add('favorited');
+                    }
+                    localStorage.setItem('favorites', JSON.stringify(favorites));
+                    if (document.querySelector('.tab.active').dataset.tab === 'favorites') {
+                        populateSigns(lettersData, phrasesData, 'favorites', searchInput.value);
+                    }
+                });
+                signItem.appendChild(favoriteIcon);
+
+                signItem.addEventListener('click', () => displaySign(sign.displayName));
+                signItem.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        displaySign(sign.displayName);
+                    }
+                });
+                grid.appendChild(signItem);
+            }
+
+            // Fetch signs from static/signs.json
+            fetch('/static/signs.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load signs.json');
+                    return response.json();
+                })
+                .then(data => {
+                    lettersData = data.letters.map(file => {
+                        const baseName = file.replace('.jpg', '');
+                        const displayName = baseName.length === 1 ? baseName.toUpperCase() : baseName;
+                        return { displayName, file: baseName.toLowerCase() + '.gif' };
+                    }).sort((a, b) => a.displayName.localeCompare(b.displayName));
+                    
+                    phrasesData = data.phrases.map(file => {
+                        const correctedFile = filenameCorrections[file] || file;
+                        const displayName = correctedFile.replace('.gif', '')
+                                                        .split(' ')
+                                                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                                                        .join(' ');
+                        phraseMap.set(displayName.toLowerCase(), correctedFile);
+                        return { displayName, file: correctedFile };
+                    }).sort((a, b) => a.displayName.localeCompare(b.displayName));
+                    
+                    populateSigns(lettersData, phrasesData);
+                })
+                .catch(error => {
+                    console.error('Error loading signs:', error);
+                    const errorMsg = document.createElement('p');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = 'Failed to load signs from server. Showing available signs.';
+                    signList.appendChild(errorMsg);
+                    lettersData = fallbackSigns
+                        .filter(s => s.length === 1)
+                        .map(s => ({ displayName: s, file: s.toLowerCase() + '.gif' }))
+                        .sort((a, b) => a.displayName.localeCompare(b.displayName));
+                    phrasesData = fallbackSigns
+                        .filter(s => s.length > 1)
+                        .map(s => ({ displayName: s, file: s.toLowerCase().replace(/\s+/g, '_') + '.gif' }))
+                        .sort((a, b) => a.displayName.localeCompare(b.displayName));
+                    populateSigns(lettersData, phrasesData);
+                });
 
             function displaySign(sign) {
-                popupContent.innerHTML = '';
-                const lowerSign = sign.toLowerCase().replace(/\s+/g, '_');
-                const gifPath = `/static/ISL_Gifs/${lowerSign}.gif`;
-                const img = document.createElement('img');
+                popupContent.innerHTML = '<div class="spinner"><i class="fas fa-spinner"></i></div>';
+                const lowerSign = sign.toLowerCase();
+                const isPhrase = phraseMap.has(lowerSign);
+                let gifFile;
 
-                fetch(gifPath)
-                    .then(response => {
-                        if (response.ok) {
-                            img.src = gifPath;
-                            popupContent.appendChild(img);
+                if (isPhrase) {
+                    gifFile = phraseMap.get(lowerSign);
+                } else {
+                    gifFile = lowerSign.length === 1 ? `${lowerSign}.gif` : `${lowerSign.replace(/\s+/g, '_')}.gif`;
+                }
+
+                const gifPath = `/static/ISL_Gifs/${gifFile}`;
+
+                if (isPhrase) {
+                    fetch(gifPath)
+                        .then(response => {
+                            if (response.ok) {
+                                popupContent.innerHTML = '';
+                                const img = document.createElement('img');
+                                img.src = gifPath;
+                                img.alt = `Sign language demonstration for ${sign}`;
+                                img.setAttribute('loading', 'lazy');
+                                popupContent.appendChild(img);
+                            } else {
+                                console.warn(`GIF not found: ${gifPath} (Status: ${response.status})`);
+                                popupContent.innerHTML = '';
+                                const errorMsg = document.createElement('p');
+                                errorMsg.className = 'error-message';
+                                errorMsg.textContent = `GIF for "${sign}" not found.`;
+                                popupContent.appendChild(errorMsg);
+                            }
                             showPopup();
-                        } else {
-                            const letters = sign.split('');
-                            const letterContainer = document.createElement('div');
-                            letterContainer.style.display = 'flex';
-                            letterContainer.style.flexWrap = 'wrap'; // Added to wrap letters
-                            letterContainer.style.justifyContent = 'center';
-                            letterContainer.style.gap = '20px'; // Increased from 15px
-                            letterContainer.style.padding = '20px'; // Added padding
-                            letters.forEach(letter => {
-                                const letterImg = document.createElement('img');
-                                letterImg.src = `/static/letters/${letter.toLowerCase()}.jpg`;
-                                letterImg.style.maxWidth = '250px'; // Increased from 200px
-                                letterImg.style.maxHeight = '250px'; // Added max-height
-                                letterImg.onerror = () => letterImg.style.display = 'none';
-                                letterContainer.appendChild(letterImg);
-                            });
-                            popupContent.appendChild(letterContainer);
+                        })
+                        .catch(error => {
+                            console.error(`Error fetching GIF: ${gifPath}`, error);
+                            popupContent.innerHTML = '';
+                            const errorMsg = document.createElement('p');
+                            errorMsg.className = 'error-message';
+                            errorMsg.textContent = `Error loading GIF for "${sign}".`;
+                            popupContent.appendChild(errorMsg);
                             showPopup();
-                        }
-                    })
-                    .catch(() => {
-                        const letters = sign.split('');
-                        const letterContainer = document.createElement('div');
-                        letterContainer.style.display = 'flex';
-                        letterContainer.style.flexWrap = 'wrap'; // Added to wrap letters
-                        letterContainer.style.justifyContent = 'center';
-                        letterContainer.style.gap = '20px'; // Increased from 15px
-                        letterContainer.style.padding = '20px'; // Added padding
-                        letters.forEach(letter => {
-                            const letterImg = document.createElement('img');
-                            letterImg.src = `/static/letters/${letter.toLowerCase()}.jpg`;
-                            letterImg.style.maxWidth = '250px'; // Increased from 200px
-                            letterImg.style.maxHeight = '250px'; // Added max-height
-                            letterImg.onerror = () => letterImg.style.display = 'none';
-                            letterContainer.appendChild(letterImg);
                         });
-                        popupContent.appendChild(letterContainer);
-                        showPopup();
+                } else {
+                    fetch(gifPath)
+                        .then(response => {
+                            if (response.ok) {
+                                popupContent.innerHTML = '';
+                                const img = document.createElement('img');
+                                img.src = gifPath;
+                                img.alt = `Sign language demonstration for ${sign}`;
+                                img.setAttribute('loading', 'lazy');
+                                popupContent.appendChild(img);
+                            } else {
+                                displayLetterImages(sign);
+                            }
+                            showPopup();
+                        })
+                        .catch(() => {
+                            displayLetterImages(sign);
+                            showPopup();
+                        });
+                }
+            }
+
+            function displayLetterImages(sign) {
+                popupContent.innerHTML = '';
+                const letters = sign.replace(/[^a-zA-Z]/g, '').split('');
+                const letterContainer = document.createElement('div');
+                letterContainer.style.display = 'flex';
+                letterContainer.style.flexWrap = 'wrap';
+                letterContainer.style.justifyContent = 'center';
+                letterContainer.style.gap = '20px';
+                letterContainer.style.padding = '20px';
+                if (letters.length === 0) {
+                    const errorMsg = document.createElement('p');
+                    errorMsg.className = 'error-message';
+                    errorMsg.textContent = `No valid letters found for "${sign}".`;
+                    letterContainer.appendChild(errorMsg);
+                } else {
+                    letters.forEach(letter => {
+                        const letterImg = document.createElement('img');
+                        letterImg.src = `/static/letters/${letter.toLowerCase()}.jpg`;
+                        letterImg.alt = `Sign for letter ${letter}`;
+                        letterImg.style.maxWidth = '250px';
+                        letterImg.style.maxHeight = '250px';
+                        letterImg.setAttribute('loading', 'lazy');
+                        letterImg.onerror = () => {
+                            letterImg.style.display = 'none';
+                            const errorMsg = document.createElement('p');
+                            errorMsg.className = 'error-message';
+                            errorMsg.textContent = `Image for letter ${letter} not found.`;
+                            letterContainer.appendChild(errorMsg);
+                        };
+                        letterContainer.appendChild(letterImg);
                     });
+                }
+                popupContent.appendChild(letterContainer);
             }
 
             function showPopup() {
                 popup.style.display = 'block';
                 overlay.style.display = 'block';
+                popup.focus();
             }
 
             function hidePopup() {
@@ -278,6 +619,21 @@
                 if (e.key === 'Escape' && popup.style.display === 'block') {
                     hidePopup();
                 }
+            });
+
+            // Search Functionality
+            searchInput.addEventListener('input', () => {
+                const activeTab = document.querySelector('.tab.active').dataset.tab;
+                populateSigns(lettersData, phrasesData, activeTab, searchInput.value);
+            });
+
+            // Tab Functionality
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    populateSigns(lettersData, phrasesData, tab.dataset.tab, searchInput.value);
+                });
             });
         });
     </script>
