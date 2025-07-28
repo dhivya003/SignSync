@@ -6,12 +6,13 @@ An AI-powered system that translates **sign language to text & speech** and **sp
 ## 🎯 Features  
 ✅ Real-time **sign language recognition** using CNN & OpenCV  
 ✅ **Speech-to-text** conversion with NLP & TTS  
-✅ **Animated sign language avatars** for translation  
+✅ **Animated sign language avatars** for translation
 ✅ **Dataset**: [Download Here](https://drive.google.com/file/d/1rQRkPkvxwelO-W8o0ZsbV8YzIipGfqMb/view?usp=sharing)  
 
 ## 📂 Tech Stack  
 🔹 **Computer Vision**: OpenCV, Mediapipe  
 🔹 **Deep Learning**: TensorFlow, Keras (CNN)  
 🔹 **Speech Processing**: Speech-to-Text (STT), Text-to-Speech (TTS)  
-🔹 **Programming**: Python  
+🔹 **Programming**: Python
+
 
