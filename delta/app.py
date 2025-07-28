@@ -32,6 +32,7 @@ labels_dict = {
 def load_model():
     """Load the trained model from pickle file"""
     model_path = "signmodel.p"
+   
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found at {model_path}.")
     print("Loading trained model...")
@@ -199,4 +200,6 @@ model = load_model()
 
 if __name__ == "__main__":
     print("Starting Flask app...")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    #app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
