@@ -31,10 +31,13 @@ labels_dict = {
 
 def load_model():
     """Load the trained model from pickle file"""
-    model_path = "signmodel.p"
-   
+    #model_path = "signmodel.p"
+    model_path = os.path.join(os.path.dirname(__file__), "signmodel.p")
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found at {model_path}.")
+   
+    #if not os.path.exists(model_path):
+        #raise FileNotFoundError(f"Model file not found at {model_path}.")
     print("Loading trained model...")
     try:
         model_dict = pickle.load(open(model_path, 'rb'))
