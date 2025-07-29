@@ -7,6 +7,7 @@ An AI-powered system that translates **sign language to text & speech** and **sp
 ✅ Real-time **sign language recognition** using CNN & OpenCV  
 ✅ **Speech-to-text** conversion with NLP & TTS  
 ✅ **Animated sign language avatars** for translation  
+[![Live](https://img.shields.io/badge/Live-SignSync-brightgreen)](https://signsync.onrender.com)
 
 
 ## 📂 Tech Stack  
