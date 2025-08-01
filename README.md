@@ -8,6 +8,9 @@ An AI-powered system that translates **sign language to text & speech** and **sp
 ✅ **Speech-to-text** conversion with NLP & TTS  
 ✅ **Animated sign language avatars** for translation  
 [![Live](https://img.shields.io/badge/Live-SignSync-brightgreen)](https://signsync.onrender.com)
+## 🔗 LinkedIn Demo
+Check out the [Video Demo on LinkedIn](https://www.linkedin.com/posts/dhivyas03_aiforgood-signlanguagerecognition-indiansignlanguage-activity-7330959874081611776-FsP1?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEceklMB-0eCbkq7F-FC5K-wJQxA-e2lAus)
+
 
 
 ## 📂 Tech Stack  
